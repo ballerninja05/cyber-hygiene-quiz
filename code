@@ -1,0 +1,123 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const questions = [
+  {
+    question: "Do you use a password manager?",
+    options: [
+      { text: "Yes, for all accounts", points: 5 },
+      { text: "Only for some accounts", points: 3 },
+      { text: "No, I reuse passwords", points: 0 },
+    ],
+  },
+  {
+    question: "Do you use unique passwords for every account?",
+    options: [
+      { text: "Yes, every account has a different password", points: 5 },
+      { text: "I reuse some passwords", points: 3 },
+      { text: "I use the same password for most accounts", points: 0 },
+    ],
+  },
+  {
+    question: "Do you enable MFA on your accounts?",
+    options: [
+      { text: "Yes, on all possible accounts", points: 5 },
+      { text: "On some accounts", points: 3 },
+      { text: "No, I don’t use MFA", points: 0 },
+    ],
+  },
+  {
+    question: "Do you verify website URLs before entering login credentials?",
+    options: [
+      { text: "Yes, I always check for HTTPS and confirm the domain", points: 5 },
+      { text: "Sometimes", points: 3 },
+      { text: "No, I don’t check URLs", points: 0 },
+    ],
+  },
+  {
+    question: "Do you keep your software and devices updated?",
+    options: [
+      { text: "Yes, I update immediately", points: 5 },
+      { text: "I update occasionally", points: 3 },
+      { text: "No, I rarely update", points: 0 },
+    ],
+  },
+  {
+    question: "How do you handle suspicious emails?",
+    options: [
+      { text: "I report them to IT/security team", points: 5 },
+      { text: "I ignore or delete them", points: 3 },
+      { text: "I sometimes click on links if they look legit", points: 0 },
+    ],
+  },
+  {
+    question: "Do you use a VPN when accessing work data remotely?",
+    options: [
+      { text: "Yes, always", points: 5 },
+      { text: "Sometimes", points: 3 },
+      { text: "No, I don’t use a VPN", points: 0 },
+    ],
+  },
+  {
+    question: "Do you lock your screen when stepping away from your device?",
+    options: [
+      { text: "Yes, every time", points: 5 },
+      { text: "Sometimes", points: 3 },
+      { text: "No, I rarely lock my screen", points: 0 },
+    ],
+  },
+];
+
+export default function CyberHygieneQuiz() {
+  const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSelect = (qIndex, points) => {
+    const newAnswers = [...answers];
+    newAnswers[qIndex] = points;
+    setAnswers(newAnswers);
+  };
+
+  const calculateScore = () => answers.reduce((sum, points) => sum + (points || 0), 0);
+
+  const getResult = (score) => {
+    if (score >= 35) return "🏆 Cybersecurity Champion - Excellent habits!";
+    if (score >= 25) return "🚀 Security-Conscious - Room to improve.";
+    if (score >= 15) return "⚠️ Moderate Risk - Needs improvement.";
+    return "❌ High Risk - Immediate action needed!";
+  };
+
+  return (
+    <div className="max-w-xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Cyber Hygiene Self-Assessment Quiz</h1>
+      {questions.map((q, qIndex) => (
+        <Card key={qIndex} className="mb-4">
+          <CardContent className="p-4">
+            <p className="font-semibold">{q.question}</p>
+            {q.options.map((opt, oIndex) => (
+              <button
+                key={oIndex}
+                className={`block w-full mt-2 p-2 border rounded ${
+                  answers[qIndex] === opt.points ? "bg-blue-500 text-white" : "bg-gray-100"
+                }`}
+                onClick={() => handleSelect(qIndex, opt.points)}
+              >
+                {opt.text}
+              </button>
+            ))}
+          </CardContent>
+        </Card>
+      ))}
+      <Button onClick={() => setSubmitted(true)} className="mt-4 w-full">
+        Submit
+      </Button>
+      {submitted && (
+        <div className="mt-6 p-4 bg-green-100 border border-green-500 rounded">
+          <h2 className="text-xl font-bold">Your Score: {calculateScore()} / {questions.length * 5}</h2>
+          <p className="mt-2">{getResult(calculateScore())}</p>
+        </div>
+      )}
+    </div>
+  );
+}
